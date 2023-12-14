@@ -1,5 +1,19 @@
 """
 Module for generative mathematical processes, such addition or subtraction.
+
+MIT License
+
+Copyright (c) 2020 Georges Dimitrov https://github.com/georgesdimitrov/arvo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 """
 
 import math
@@ -9,8 +23,8 @@ from typing import Optional, Union, Sequence
 
 from music21 import stream
 
-from arvo import sequences
-from arvo import tools
+from composer_toolkit import sequences
+from composer_toolkit import tools
 
 
 __all__ = [

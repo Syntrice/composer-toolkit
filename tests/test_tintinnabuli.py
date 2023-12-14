@@ -1,7 +1,7 @@
 import pytest
 from music21 import converter
 from music21 import chord
-from arvo import tintinnabuli
+from composer_toolkit import tintinnabuli
 
 
 @pytest.fixture

@@ -30,11 +30,11 @@ from music21 import duration
 from music21 import layout
 from music21 import note
 from music21 import spanner
-from arvo import isorhythm
-from arvo import minimalism
-from arvo import tintinnabuli
-from arvo import tools
-from arvo import transformations
+from composer_toolkit import isorhythm
+from composer_toolkit import minimalism
+from composer_toolkit import tintinnabuli
+from composer_toolkit import tools
+from composer_toolkit import transformations
 
 # ------------------------------------------------------------------------------
 # Define basic elements

@@ -3,7 +3,7 @@ from music21 import converter
 from music21 import pitch
 from music21 import note
 from music21 import duration
-from arvo import tools
+from composer_toolkit import tools
 
 
 @pytest.fixture

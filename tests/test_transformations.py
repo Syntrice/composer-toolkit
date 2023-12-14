@@ -1,6 +1,6 @@
 import pytest
-from arvo import transformations
-from arvo import scales
+from composer_toolkit import transformations
+from composer_toolkit import scales
 from music21 import converter
 
 

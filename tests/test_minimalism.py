@@ -1,7 +1,7 @@
 import pytest
 from music21 import converter
-from arvo import minimalism
-from arvo import sequences
+from composer_toolkit import minimalism
+from composer_toolkit import sequences
 
 
 @pytest.fixture

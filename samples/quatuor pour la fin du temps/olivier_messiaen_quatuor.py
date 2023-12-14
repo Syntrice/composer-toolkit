@@ -22,8 +22,8 @@ from music21 import metadata
 from music21 import meter
 from music21 import note
 from music21 import stream
-from arvo import isorhythm
-from arvo import tools
+from composer_toolkit import isorhythm
+from composer_toolkit import tools
 
 
 # --------------------------------------------------------------------------------------------------

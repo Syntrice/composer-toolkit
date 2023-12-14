@@ -1,6 +1,6 @@
 import pytest
 from music21 import converter
-from arvo import isorhythm
+from composer_toolkit import isorhythm
 
 
 @pytest.fixture
