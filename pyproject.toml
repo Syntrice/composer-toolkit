@@ -9,6 +9,7 @@ packages = [{include = "composer_toolkit"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 music21 = "^9.1.0"
+multipledispatch = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

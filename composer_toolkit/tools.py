@@ -1,19 +1,22 @@
 """
 Convenient helper functions for quickly manipulating and combining music21 elements.
 
-MIT License
+This file incorporates and extends code covered by the following license:
 
-Copyright (c) 2020 Georges Dimitrov https://github.com/georgesdimitrov/arvo
+    MIT License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    Copyright (c) 2020 Georges Dimitrov https://github.com/georgesdimitrov/arvo
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
 """
 
 import numbers
@@ -29,7 +32,7 @@ __all__ = [
     "notes_to_stream",
     "durations_to_stream",
     "merge_streams",
-    "append_stream"
+    "append_stream",
 ]
 
 
@@ -154,3 +157,27 @@ def append_stream(original_stream: stream.Stream, *streams: stream.Stream):
         h_offset = original_stream.highestTime
         for element in stream_.elements:
             original_stream.insert(element.offset + h_offset, element)
+
+
+def streams_to_score(*streams: stream.Stream) -> stream.Score:
+    """
+
+    Combines multiple streams into a single score.
+
+    Args:
+        *streams: Any number of streams to be add to a score.
+
+    Returns:
+        stream.Score: A new music21 Score containing all streams.
+    """
+    score = stream.Score()
+    parts = []
+    for stream in streams:
+        part = stream.Part()
+        for element in stream.elements:
+            part.append(element)
+        parts.append(part)
+
+    for part in parts:
+        score.insert(0, part)
+    return score

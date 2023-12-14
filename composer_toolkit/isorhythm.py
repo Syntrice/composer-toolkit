@@ -1,22 +1,24 @@
 """
 Functions for generating isorhythmic constructions from pitch and rhythm sequences.
 
-MIT License
+This file incorporates and extends code covered by the following license:
 
-Copyright (c) 2020 Georges Dimitrov https://github.com/georgesdimitrov/arvo
+    MIT License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    Copyright (c) 2020 Georges Dimitrov https://github.com/georgesdimitrov/arvo
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
 """
 
-import copy
 import numbers
 from typing import Optional, Union, Sequence
 
@@ -28,72 +30,63 @@ from music21 import chord
 
 from composer_toolkit import tools
 
-
 __all__ = ["create_isorhythm"]
 
 
 def create_isorhythm(
     pitches: Union[
-        stream.Stream, Sequence[Union[numbers.Number, str, pitch.Pitch, note.Note, chord.Chord]]
+        stream.Stream,
+        Sequence[Union[numbers.Number, str, pitch.Pitch, note.Note, chord.Chord]],
     ],
     durations: Union[
-        stream.Stream, Sequence[Union[numbers.Number, duration.Duration, note.Note, chord.Chord]]
+        stream.Stream,
+        Sequence[Union[numbers.Number, duration.Duration, note.Note, chord.Chord]],
     ],
     length: Optional[int] = None,
+    color_offset=0,
+    talea_offset=0,
 ) -> stream.Stream:
-
     """Creates an isorhythmic construction from pitches and durations sequences.
 
     Args:
         pitches: The stream or Sequence containing pitch information. Sequence can consist of
-          pitch classes (0-11), midi note numbers (12+), note names (str), music21 Pitch objects
-          or music21 Note objects.
+            pitch classes (0-11), midi note numbers (12+), note names (str), music21 Pitch objects
+            or music21 Note objects.
         durations: The stream or Sequence containing duration information. Sequence can consist
-          of numeric values (1 = quarter note), music21 Duration objects or music21 Note objects.
+            of numeric values (1 = quarter note), music21 Duration objects or music21 Note objects.
         length: Optional; The length of the resulting stream, expressed in isorhythmic elements.
-          By default, the process continues until the cycle is completed. For example, provided a
-          color of 5 pitches and a talea of 7 rhythms, this function will, by default, return an
-          isorhythm of 35 elements.
+            By default, the process continues until the cycle is completed. For example, provided a
+            color of 5 pitches and a talea of 7 rhythms, this function will, by default, return an
+            isorhythm of 35 elements.
+        color_offset: Optional; The offset at which the color sequence should start.
+        talea_offset: Optional; The offset at which the talea sequence should start.
 
     Returns:
         The stream created by the isorhythmic process.
     """
 
-    # Create pitches list
+    result_stream = stream.Stream()
+
+    # create pitches list
     if not isinstance(pitches, stream.Stream):
         pitches = tools.notes_to_stream(pitches)
-    color_list = []
-    for element in pitches.flat.notes:
-        color_list.append(element)
+    color = [str(p.pitch) for p in pitches.flatten().notes]
 
-    # Create durations list
+    # create durations list
     if not isinstance(durations, stream.Stream):
         durations = tools.durations_to_stream(durations)
-    talea_list = []
-    for element in durations.flat.notes:
-        talea_list.append(element.duration)
+    talea = [d.duration for d in durations.flatten().notes]
 
-    # Initialize function variables
-    color_index = 0
-    talea_index = 0
-    current_length = 0
-    post_stream = stream.Stream()
+    # calculate length
+    if length is None:
+        length = len(color) * len(talea)
 
-    # Loop
-    while True:
-        current_element = copy.deepcopy(color_list[color_index])
-        current_element.duration = talea_list[talea_index]
-        post_stream.append(current_element)
-        color_index += 1
-        if color_index == len(color_list):
-            color_index = 0
-        talea_index += 1
-        if talea_index == len(talea_list):
-            talea_index = 0
-        current_length += 1
-        if length is None and color_index == 0 and talea_index == 0:
-            break
-        if length is not None and current_length == length:
-            break
+    for i in range(length):
+        result_stream.append(
+            note.Note(
+                pitch=color[(i + color_offset) % len(color)],
+                duration=talea[(i + talea_offset) % len(talea)],
+            )
+        )
 
-    return post_stream
+    return result_stream
