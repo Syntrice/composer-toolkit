@@ -172,9 +172,9 @@ def streams_to_score(*streams: stream.Stream) -> stream.Score:
     """
     score = stream.Score()
     parts = []
-    for stream in streams:
+    for s in streams:
         part = stream.Part()
-        for element in stream.elements:
+        for element in s.elements:
             part.append(element)
         parts.append(part)
 
