@@ -21,6 +21,7 @@ This file incorporates and extends code covered by the following license:
 
 import numbers
 from typing import Optional, Union, Sequence
+import math
 
 from music21 import stream
 from music21 import duration
@@ -29,6 +30,7 @@ from music21 import note
 from music21 import chord
 
 from composer_toolkit import tools
+import copy
 
 __all__ = ["create_isorhythm"]
 
@@ -70,22 +72,22 @@ def create_isorhythm(
     # create pitches list
     if not isinstance(pitches, stream.Stream):
         pitches = tools.notes_to_stream(pitches)
-    color = [str(p.pitch) for p in pitches.flatten().notes]
+    color = [p.pitch for p in pitches.flatten().notes]
 
     # create durations list
     if not isinstance(durations, stream.Stream):
         durations = tools.durations_to_stream(durations)
     talea = [d.duration for d in durations.flatten().notes]
 
-    # calculate length
+    # calculate the length of a complete cylce of isorhythm before the sequence repeats
     if length is None:
-        length = len(color) * len(talea)
+        length = math.lcm(len(color), len(talea))
 
     for i in range(length):
         result_stream.append(
             note.Note(
-                pitch=color[(i + color_offset) % len(color)],
-                duration=talea[(i + talea_offset) % len(talea)],
+                pitch=copy.deepcopy(color[(i + color_offset) % len(color)]),
+                duration=copy.deepcopy(talea[(i + talea_offset) % len(talea)]),
             )
         )
 
