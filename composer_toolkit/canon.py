@@ -3,6 +3,7 @@ Functions for generating canonic constructions from pitch and rhythm sequences.
 """
 
 import enum
+from copy import deepcopy
 from music21 import duration
 from music21 import note
 from music21 import stream
@@ -19,12 +20,12 @@ class FramingType(enum.Enum):
     SILENCE = 0
     AUGMENT = 1
 
-
 def canonize(
     *streams: stream.Stream,
     delay_duration: float = 1,
-    start_type: FramingType = FramingType.SILENCE
-) -> None:
+    start_type: FramingType = FramingType.SILENCE,
+    in_place: bool = False,
+) -> tuple[stream.Stream]:
     """
     Creates a canonic construction from pitches and durations sequences.
 
@@ -32,7 +33,11 @@ def canonize(
         delay_duration (int, optional): The time difference between each voices.
         start_type (StartType, optional): How the start of the delayed voices should be handled. Can be either FramingType.SILENCE or FramingType.AUGMENT.
         end_type (StartType, optional): How the end of the delayed voices should be handled. Can be either FramingType.SILENCE or FramingType.AUGMENT.
+        in_place (bool, optional): Whether to modify the original streams or to return a new one.
     """
+
+    if not in_place:
+        streams = deepcopy(streams)
 
     counter = 1
 
@@ -45,3 +50,5 @@ def canonize(
         for s in streams[1:]:
             s.notes.first().duration.quarterLength += delay_duration * counter
             counter += 1
+
+    return streams

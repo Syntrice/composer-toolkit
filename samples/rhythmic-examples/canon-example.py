@@ -21,8 +21,9 @@ if __name__ == "__main__":
     melody2.insert(0, m21.instrument.Violin())
     melody3.insert(0, m21.instrument.Viola())
     melody4.insert(0, m21.instrument.Violoncello())
+    melody1.augmentOrDiminish
     
-    canon.canonize(melody1, melody2, melody3, melody4, delay_duration=2)
+    canon.canonize(melody1, melody2, melody3, melody4, delay_duration=2, in_place=True)
     score = tools.streams_to_score(melody1, melody2, melody3, melody4)
 
     score.write("midi", fp="./output/canon-example.mid")
