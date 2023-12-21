@@ -21,6 +21,7 @@ This file incorporates and extends code covered by the following license:
 
 import numbers
 from typing import Union, Sequence, Optional, Type
+from copy import deepcopy
 from music21 import duration
 from music21 import note
 from music21 import stream
@@ -181,3 +182,36 @@ def streams_to_score(*streams: stream.Stream) -> stream.Score:
     for part in parts:
         score.insert(0, part)
     return score
+
+def augment_into_rests(*streams: stream.Stream, in_place: bool = False) -> stream.Stream:
+    """Function that takes a stream, and eliminates all rests AFTER THE FIRST PITCH
+    by augmenting the previous pitch to take up the duration of the rest before the next pitch comes in
+
+
+    Args:
+        stream (stream.Stream): Any number of streams to perform the operation on
+        in_place (bool, optional): Whether to perform the operation in place or not. Defaults to False.
+
+    Returns:
+        stream.Stream: Returns instances of the streams with the operation performed, or a new streams if in_place is False
+    """
+    
+    if not in_place:
+        streams = deepcopy(streams)
+    
+    for stream in streams:
+    
+        # do nothing until the first note is found
+        found_first_note = False
+        
+        for n in stream.notesAndRests:
+            if isinstance(n, note.Note):
+                found_first_note = True
+            elif isinstance(n, note.Rest) and found_first_note:
+                # augment the previous note to take up the duration of the rest
+                prev_note = stream.notesAndRests.getElementBeforeOffset(n.offset)
+                prev_note.duration.quarterLength += n.duration.quarterLength
+                # remove the rest
+                stream.remove(n)
+                
+    return streams

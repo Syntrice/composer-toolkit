@@ -8,12 +8,19 @@ from music21 import stream
 from music21 import pitch
 from music21 import chord
 
-
-
 def hocket_melody(
     num_voices: int,
     melody: stream.Stream
 ) -> list[stream.Stream]:
+    """Hockets a melody between a specified number of streams.
+
+    Args:
+        num_voices (int): The number of voices to hocket the melody between.
+        melody (stream.Stream): A stream containing the melody to hocket.
+
+    Returns:
+        list[stream.Stream]: A list of streams containing the hocketed melody.
+    """
     
     streams = [stream.Stream() for _ in range(num_voices)]
     

@@ -2,34 +2,12 @@ from json import tool
 import music21 as m21
 from composer_toolkit import tools, isorhythm, hocket, canon
 
-def augment_into_rests(stream: m21.stream.Stream):
-    """function that takes a stream, and eliminates all rests AFTER THE FIRST PITCH
-    by augmenting the previous pitch to take up the duration of the rest before the next pitch comes in
+pitches = [["C4","D4","E4","C4","B3","C4","A3","B3"],
+            ["C4","E4","B3","A3","G3","C4","D4","B3"]]
 
-    """
-    # do nothing until the first note is found
-    found_first_note = False
-    
-    for n in stream.notesAndRests:
-        if isinstance(n, m21.note.Note):
-            found_first_note = True
-        elif isinstance(n, m21.note.Rest) and found_first_note:
-            # augment the previous note to take up the duration of the rest
-            prev_note = stream.notesAndRests.getElementBeforeOffset(n.offset)
-            prev_note.duration.quarterLength += n.duration.quarterLength
-            # remove the rest
-            stream.remove(n)
+times_each = 1
 
-pitches = [
-    ["C4", "E4", "G4"],
-    ["D4", "F4", "A4"],
-    ["A3", "C4", "E4"],
-    ["G3", "B3", "D4"],
-    ]
-
-times_each = 4
-
-durations = [1,2,0.5,1]
+durations = [2]
 
 melody = m21.stream.Stream()
 
@@ -39,12 +17,9 @@ for pitchset in pitches:
 
 part1, part3, part2, part4 = hocket.hocket_melody(4, melody)
 
-augment_into_rests(part1)
-augment_into_rests(part2)
-augment_into_rests(part3)
-augment_into_rests(part4)
+part1, part2, part3, part4 = tools.augment_into_rests(part1, part2, part3, part4)
 
-canon.canonize(part1, part2, part3, part4, delay_duration=4, in_place=True)
+#canon.canonize(part1, part2, part3, part4, delay_duration=4, in_place=True)
 
 part1.transpose(24, inPlace=True)
 part2.transpose(12, inPlace=True)
