@@ -1,56 +1,68 @@
+from copy import deepcopy
 from typing import List
-from music21 import note
+from music21.note import Lyric
+from music21 import stream
 
-class Lyrics:
-    def __init__(self, text: str):
-        """A class which represents some lyrics.
 
-        Args:
-            text (str): the text of the lyrics. For now, this should be manually syllabized
-            by means of hyphens, i.e. each syllable should be separated by a "-" symbol.
-        """
+def text_to_lyrics(text: str) -> List[Lyric]:
+    """Converts a string of text into a list of music21 lyrics. It does this by splitting the text into syllables and then converting each syllable into a lyric.
 
-        self._text = text
+    Args:
+        text (str): The text to convert into lyrics. Should be in syllable format, with syllables separated by hyphens.
 
-    def text(self, syllablized: bool = False) -> str:
-        """
-        Returns the text of the lyrics.
+    Returns:
+        List[Lyric]: A list of music21 lyrics.
+    """
 
-        Parameters:
-            syllablized (bool): Indicates whether the text should include syllables or not.
-                If True, the text will include syllables represented by hyphens ("-").
-                If False (default), the text will not include syllables.
+    # split text into words
+    words = text.split(" ")
+    lyrics = []
 
-        Returns:
-            str: The text of the lyrics.
-        """
-        if syllablized:
-            return self._text
+    for word in words:
+        # split word into syllables
+        syllables = word.split("-")
+        num_syllables = len(syllables)
 
-        return self._text.replace("-", "")
+        # convert each syllable into a lyric and add it to the list of lyrics
+        for i, syllable in enumerate(syllables):
+            syllabic = (
+                "single"
+                if num_syllables == 1
+                else (
+                    "begin"
+                    if i == 0
+                    else ("end" if i == num_syllables - 1 else "middle")
+                )
+            )
+            lyrics.append(Lyric(syllable, syllabic=syllabic))
 
-    def words(self, syllablized: bool = False) -> List[str]:
-        """
-        Returns a list of words in the lyrics.
+    return lyrics
 
-        Parameters:
-            syllablized (bool): Indicates whether the words should include syllables or not.
-                If True, the words will include syllables represented by hyphens ("-").
-                If False (default), the words will not include syllables.
+def apply_lyrics_to_melody(melody: stream.Stream, lyrics: Lyric, min_lyric_interval: int = 1, in_place: bool = False) -> stream.Stream:
+    """Applies the lyrics to the melody.
 
-        Returns:
-            List[str]: A list of words in the lyrics.
-        """
-        if syllablized:
-            return self._text.split(" ")
-
-        return self._text.replace("-", "").split(" ")
-
-    def syllables(self) -> List[str]:
-        """
-        Returns a list of syllables in the lyrics.
-
-        Returns:
-            List[str]: A list of syllables in the lyrics.
-        """
-        return self._text.replace("-", " ").split(" ")
+    Args:
+        melody: The melody to apply the lyrics to.
+        lyrics: The lyrics to apply to the melody.
+        min_lyric_interval: The threshold for skipping a note, so minimum interval in quarter notes between lyrics.
+    """
+    
+    if not in_place:
+        melody = deepcopy(melody)
+    
+    i = 0
+    skip = False
+    for note in melody.notes:
+        try:
+            if skip:
+                skip = False
+                continue
+            if note.duration.quarterLength < min_lyric_interval:
+                skip = True
+            note.lyric = lyrics[i]
+        except IndexError as e:
+            break
+        
+        i += 1
+        
+    return melody
