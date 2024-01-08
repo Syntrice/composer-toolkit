@@ -38,7 +38,7 @@ def text_to_lyrics(text: str) -> List[Lyric]:
 
     return lyrics
 
-def apply_lyrics_to_melody(melody: stream.Stream, lyrics: Lyric, min_lyric_interval: int = 1, in_place: bool = False) -> stream.Stream:
+def apply_lyrics_to_stream(melody: stream.Stream, lyrics: Lyric, min_lyric_interval: int = 1, in_place: bool = False) -> stream.Stream:
     """Applies the lyrics to the melody.
 
     Args:

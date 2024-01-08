@@ -34,7 +34,6 @@ import copy
 
 __all__ = ["create_isorhythm"]
 
-
 def create_isorhythm(
     pitches: Union[
         stream.Stream,
@@ -45,8 +44,9 @@ def create_isorhythm(
         Sequence[Union[numbers.Number, duration.Duration, note.Note, chord.Chord]],
     ],
     length: Optional[int] = None,
-    color_offset=0,
-    talea_offset=0,
+    color_offset: int = 0,
+    talea_offset: int = 0,
+    gap: int = 0,
 ) -> stream.Stream:
     """Creates an isorhythmic construction from pitches and durations sequences.
 
@@ -62,6 +62,7 @@ def create_isorhythm(
             isorhythm of 35 elements.
         color_offset: Optional; The offset at which the color sequence should start.
         talea_offset: Optional; The offset at which the talea sequence should start.
+        gap: Optional; The length of a rest in quarter notes to insert between each isorhythmic element.
 
     Returns:
         The stream created by the isorhythmic process.
@@ -88,7 +89,10 @@ def create_isorhythm(
             note.Note(
                 pitch=copy.deepcopy(color[(i + color_offset) % len(color)]),
                 duration=copy.deepcopy(talea[(i + talea_offset) % len(talea)]),
-            )
+            )        
         )
+        
+        if gap > 0:
+            result_stream.append(note.Rest(duration=duration.Duration(gap)))
 
     return result_stream

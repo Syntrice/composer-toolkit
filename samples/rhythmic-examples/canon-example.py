@@ -1,6 +1,6 @@
 from copy import deepcopy
 import music21 as m21
-from composer_toolkit import tools, isorhythm, canon
+from composer_toolkit import tools, isorhythm, canon, transformations
 
 if __name__ == "__main__":
     pitches = [["C4","D4","E4","C4","B3","C4","A3","B3"],
@@ -14,10 +14,16 @@ if __name__ == "__main__":
     melody4 = m21.stream.Stream()
 
     for p in pitches:
-        tools.append_stream(melody1,isorhythm.create_isorhythm(p, durations, color_offset=0).transpose(12))
-        tools.append_stream(melody2,isorhythm.create_isorhythm(p, durations, color_offset=1).transpose(7))
-        tools.append_stream(melody3,isorhythm.create_isorhythm(p, durations, color_offset=2).transpose(0))
-        tools.append_stream(melody4,isorhythm.create_isorhythm(p, durations, color_offset=3).transpose(-7))
+        tools.append_stream(melody1,isorhythm.create_isorhythm(p, durations, color_offset=0))
+        tools.append_stream(melody2,isorhythm.create_isorhythm(p, durations, color_offset=1))
+        tools.append_stream(melody3,isorhythm.create_isorhythm(p, durations, color_offset=2))
+        tools.append_stream(melody4,isorhythm.create_isorhythm(p, durations, color_offset=3))
+    
+    scale = m21.scale.MajorScale("C4")
+    melody1 = transformations.scalar_transposition(melody1, 7, scale)
+    melody2 = transformations.scalar_transposition(melody2, 4, scale)
+    #melody 3 = transformations.scalar_transposition(melody3, 0, scale)
+    melody4 = transformations.scalar_transposition(melody4, -4, scale)
     
     melody1.insert(0, m21.instrument.Violin())
     melody2.insert(0, m21.instrument.Violin())
